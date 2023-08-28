@@ -1,0 +1,7 @@
+{
+    "mongoURI":"mongodb://localhost:27017/test",
+    "jwtSecret":"mysecrettoken",
+    "payrexSecret":"frips",
+    "instance":"nAQDeiFQl8XG3eAJcJfJLfq9HMGQ2q",
+    "postMark":"d93b1c93-5749-402d-b378-89913946617f"
+}

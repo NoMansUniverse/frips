@@ -1,0 +1,16 @@
+{
+  "short_name": "MyFrips App",
+  "name": "MyFrips",
+  "description":"MyFrips est la plateforme suisse de revente de vêtements de seconde main. Trouvez les meilleures offres de vêtements, chaussures et accessoires de seconde main sur MyFrips - la marketplace pour les amoureux de la mode durable. Achetez, vendez ou échangez des articles tendance en toute simplicité et offrez-leur une seconde vie. Rejoignez notre communauté engagée pour un avenir plus respectueux de l'environnement et plus responsable.",
+  "icons": [
+    {
+      "src": "frips.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#82A0C2",
+  "background_color": "#ffffff"
+}

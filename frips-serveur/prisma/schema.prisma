@@ -1,0 +1,338 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model account {
+  id                                   Int               @id @default(autoincrement())
+  Email                                String            @unique(map: "Email") @db.VarChar(255)
+  Password                             String            @db.VarChar(60)
+  Pseudo                               String            @unique(map: "Pseudo") @db.VarChar(50)
+  Lastname                             String?           @db.VarChar(255)
+  PaymentMethod                        String?           @db.VarChar(50)
+  IBAN                                 String?           @db.VarChar(35)
+  Description                          String?           @db.VarChar(255)
+  Firstname                            String?           @db.VarChar(255)
+  TelNumber                            String?           @unique(map: "TelNumber") @db.VarChar(50)
+  BirthDate                            DateTime?         @db.DateTime(0)
+  AccountStatus                        Int?              @default(0)
+  LastConnection                       DateTime?         @db.DateTime(0)
+  id_Address                           Int?
+  id_PartnerShip                       Int?
+  address                              address?          @relation(fields: [id_Address], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "account_ibfk_2")
+  partnership                          partnership?      @relation(fields: [id_PartnerShip], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "account_ibfk_1")
+  achievment_user                      achievment_user[]
+  chat_accountTochat_id_Account_1      chat[]            @relation("accountTochat_id_Account_1")
+  chat_accountTochat_id_Account_2      chat[]            @relation("accountTochat_id_Account_2")
+  favorit                              favorit[]
+  image                                image?
+  item                                 item[]
+  message_accountTomessage_id_Receiver message[]         @relation("accountTomessage_id_Receiver")
+  message_accountTomessage_id_Sender   message[]         @relation("accountTomessage_id_Sender")
+  nbview                               nbview[]
+  pricepropose                         pricepropose[]
+  reset_password                       reset_password?
+  review                               review[]
+  transaction                          transaction[]
+
+  @@index([id_PartnerShip], map: "id_PartnerShip")
+  @@index([id_Address], map: "account_ibfk_2")
+}
+
+model achievement {
+  id              Int               @id @default(autoincrement())
+  Name            String            @db.VarChar(50)
+  Color           Int
+  Sold            Float
+  Type            String            @db.VarChar(50)
+  Description     String?           @db.VarChar(255)
+  achievment_user achievment_user[]
+}
+
+model address {
+  id        Int       @id @default(autoincrement())
+  State     String?   @db.VarChar(50)
+  NPA       Int       @db.SmallInt
+  City      String    @db.VarChar(255)
+  Street    String    @db.VarChar(255)
+  NumStreet String    @db.VarChar(10)
+  POBox     String?   @db.VarChar(50)
+  account   account[]
+}
+
+model brand {
+  id         Int          @id @default(autoincrement())
+  Name       String       @unique(map: "Name") @db.VarChar(50)
+  item_brand item_brand[]
+}
+
+model moderator {
+  id             Int       @id @default(autoincrement())
+  Email          String    @unique(map: "Email") @db.VarChar(255)
+  Password       String    @db.VarChar(60)
+  Pseudo         String    @unique(map: "Pseudo") @db.VarChar(50)
+  LastConnection DateTime? @db.DateTime(0)
+}
+
+model review {
+  id             Int         @id @default(autoincrement())
+  Date_Houre     DateTime    @db.DateTime(0)
+  Note           Int
+  Text           String?     @db.VarChar(255)
+  id_Account     Int
+  id_Transaction Int
+  account        account     @relation(fields: [id_Account], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "review_ibfk_1")
+  transaction    transaction @relation(fields: [id_Transaction], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "review_ibfk_2")
+
+  @@index([id_Account], map: "id_Account")
+  @@index([id_Transaction], map: "id_Transaction")
+}
+
+model category {
+  id                                                      Int                 @id @default(autoincrement())
+  Name                                                    String?             @db.VarChar(50)
+  category_category_categoryTocategory_category_id_Child  category_category[] @relation("categoryTocategory_category_id_Child")
+  category_category_categoryTocategory_category_id_Parent category_category[] @relation("categoryTocategory_category_id_Parent")
+  item_category                                           item_category[]
+}
+
+model color {
+  id         Int          @id @default(autoincrement())
+  Name       String       @unique(map: "Name") @db.VarChar(50)
+  Code       String       @db.VarChar(10)
+  item_color item_color[]
+}
+
+model fees {
+  id          Int         @id @default(autoincrement())
+  Name        String?     @db.VarChar(50)
+  Description String?     @db.VarChar(255)
+  Price       Float
+  item_fees   item_fees[]
+}
+
+model itemcondition {
+  id          Int     @id @default(autoincrement())
+  Name        String? @db.VarChar(50)
+  Description String? @db.VarChar(255)
+  item        item[]
+}
+
+model chat {
+  id                                 Int       @id @default(autoincrement())
+  id_Account_1                       Int
+  id_Account_2                       Int
+  account_accountTochat_id_Account_1 account   @relation("accountTochat_id_Account_1", fields: [id_Account_1], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "chat_ibfk_1")
+  account_accountTochat_id_Account_2 account   @relation("accountTochat_id_Account_2", fields: [id_Account_2], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "chat_ibfk_2")
+  message                            message[]
+
+  @@index([id_Account_1], map: "id_Account_1")
+  @@index([id_Account_2], map: "id_Account_2")
+}
+
+model achievment_user {
+  id_Account     Int
+  id_Achievement Int
+  account        account     @relation(fields: [id_Account], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "achievment_user_ibfk_1")
+  achievement    achievement @relation(fields: [id_Achievement], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "achievment_user_ibfk_2")
+
+  @@id([id_Account, id_Achievement])
+  @@index([id_Achievement], map: "id_Achievement")
+}
+
+model category_category {
+  id_Parent                                      Int
+  id_Child                                       Int
+  category_categoryTocategory_category_id_Child  category @relation("categoryTocategory_category_id_Child", fields: [id_Child], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "category_category_ibfk_2")
+  category_categoryTocategory_category_id_Parent category @relation("categoryTocategory_category_id_Parent", fields: [id_Parent], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "category_category_ibfk_1")
+
+  @@id([id_Parent, id_Child])
+  @@index([id_Child], map: "id_Child")
+}
+
+model favorit {
+  id_Account Int
+  id_Item    Int
+  account    account @relation(fields: [id_Account], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "favorit_ibfk_1")
+  item       item    @relation(fields: [id_Item], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "favorit_ibfk_2")
+
+  @@id([id_Account, id_Item])
+  @@index([id_Item], map: "id_Item")
+}
+
+model image {
+  id           Int      @id @default(autoincrement())
+  image        String   @db.VarChar(255)
+  confidencial Boolean
+  id_Item      Int?
+  id_Account   Int?     @unique(map: "id_Account")
+  account      account? @relation(fields: [id_Account], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "image_ibfk_2")
+  item         item?    @relation(fields: [id_Item], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "image_ibfk_1")
+
+  @@index([id_Item], map: "id_Item")
+}
+
+model item {
+  id               Int             @id @default(autoincrement())
+  Description      String?         @db.VarChar(255)
+  Name             String?         @db.VarChar(50)
+  Size             String?         @db.VarChar(50)
+  DeliveryDetails  String?         @db.VarChar(255)
+  DatePuplication  DateTime        @db.DateTime(0)
+  Price            Float
+  CurrentAuction   Boolean
+  Disponibility    Boolean
+  IsReservedTime   DateTime?       @db.DateTime(0)
+  Verified         Boolean
+  id_Seller        Int
+  id_ItemCondition Int
+  itemcondition    itemcondition   @relation(fields: [id_ItemCondition], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "item_ibfk_2")
+  account          account         @relation(fields: [id_Seller], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "item_ibfk_1")
+  favorit          favorit[]
+  image            image[]
+  item_brand       item_brand[]
+  item_category    item_category[]
+  item_color       item_color[]
+  item_fees        item_fees[]
+  message          message[]
+  nbview           nbview[]
+  pricepropose     pricepropose[]
+  report           report[]
+  transaction      transaction[]
+
+  @@index([id_ItemCondition], map: "id_ItemCondition")
+  @@index([id_Seller], map: "id_Seller")
+}
+
+model item_brand {
+  id_Item  Int
+  id_Brand Int
+  brand    brand @relation(fields: [id_Brand], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "item_brand_ibfk_2")
+  item     item  @relation(fields: [id_Item], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "item_brand_ibfk_1")
+
+  @@id([id_Item, id_Brand])
+  @@index([id_Brand], map: "id_Brand")
+}
+
+model item_category {
+  id_Item     Int
+  id_Category Int
+  category    category @relation(fields: [id_Category], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "item_category_ibfk_2")
+  item        item     @relation(fields: [id_Item], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "item_category_ibfk_1")
+
+  @@id([id_Item, id_Category])
+  @@index([id_Category], map: "id_Category")
+}
+
+model item_color {
+  id_Item  Int
+  id_Color Int
+  color    color @relation(fields: [id_Color], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "item_color_ibfk_2")
+  item     item  @relation(fields: [id_Item], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "item_color_ibfk_1")
+
+  @@id([id_Item, id_Color])
+  @@index([id_Color], map: "id_Color")
+}
+
+model item_fees {
+  id_Item Int
+  id_Fees Int
+  fees    fees @relation(fields: [id_Fees], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "item_fees_ibfk_2")
+  item    item @relation(fields: [id_Item], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "item_fees_ibfk_1")
+
+  @@id([id_Item, id_Fees])
+  @@index([id_Fees], map: "id_Fees")
+}
+
+model message {
+  id                                   Int      @id @default(autoincrement())
+  Text                                 String?  @db.VarChar(255)
+  Date_Houre                           DateTime @db.DateTime(0)
+  Unread                               Boolean
+  id_Sender                            Int
+  id_Receiver                          Int
+  id_Chat                              Int
+  id_Item                              Int?
+  chat                                 chat     @relation(fields: [id_Chat], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "message_ibfk_3")
+  item                                 item?    @relation(fields: [id_Item], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "message_ibfk_4")
+  account_accountTomessage_id_Receiver account  @relation("accountTomessage_id_Receiver", fields: [id_Receiver], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "message_ibfk_2")
+  account_accountTomessage_id_Sender   account  @relation("accountTomessage_id_Sender", fields: [id_Sender], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "message_ibfk_1")
+
+  @@index([id_Chat], map: "id_Chat")
+  @@index([id_Item], map: "id_Item")
+  @@index([id_Receiver], map: "id_Receiver")
+  @@index([id_Sender], map: "id_Sender")
+}
+
+model report {
+  id         Int      @id @default(autoincrement())
+  Date_Houre DateTime @db.DateTime(0)
+  Text       String   @db.VarChar(255)
+  id_Item    Int
+  item       item     @relation(fields: [id_Item], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "report_ibfk_1")
+
+  @@index([id_Item], map: "id_Item")
+}
+
+model pricepropose {
+  id_Account  Int
+  id_Item     Int
+  Price       Float
+  Approve     Boolean?
+  SendDate    DateTime  @db.DateTime(0)
+  dateApprove DateTime? @db.DateTime(0)
+  account     account   @relation(fields: [id_Account], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "pricepropose_ibfk_1")
+  item        item      @relation(fields: [id_Item], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "pricepropose_ibfk_2")
+
+  @@id([id_Account, id_Item])
+  @@index([id_Item], map: "id_Item")
+}
+
+model nbview {
+  id_Account Int
+  id_Item    Int
+  account    account @relation(fields: [id_Account], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "nbview_ibfk_1")
+  item       item    @relation(fields: [id_Item], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "nbview_ibfk_2")
+
+  @@id([id_Account, id_Item])
+  @@index([id_Item], map: "id_Item")
+}
+
+model transaction {
+  id                 Int       @id @default(autoincrement())
+  id_Account         Int
+  Price              Float?
+  TaxPrice           Float?
+  DeliveryPrice      Float?
+  Protection         Float?
+  DateSell           DateTime  @db.DateTime(0)
+  Status             String?   @db.VarChar(50)
+  IsPaid             Boolean?
+  DateSend           DateTime? @db.DateTime(0)
+  StripeIdentifier   String?   @db.VarChar(255)
+  id_Item            Int
+  DatePaymentRequest DateTime? @db.DateTime(0)
+  account            account   @relation(fields: [id_Account], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "transaction_ibfk_1")
+  item               item      @relation(fields: [id_Item], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "transaction_ibfk_2")
+  review             review[]
+
+  @@index([id_Item], map: "id_Item")
+  @@index([id_Account], map: "id_Account")
+}
+
+model partnership {
+  id      Int       @id @default(autoincrement())
+  Name    String    @db.VarChar(255)
+  account account[]
+}
+
+model reset_password {
+  id_Account Int       @id
+  token      String?   @db.VarChar(255)
+  date_end   DateTime? @db.DateTime(0)
+  account    account   @relation(fields: [id_Account], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "reset_password_ibfk_1")
+}
